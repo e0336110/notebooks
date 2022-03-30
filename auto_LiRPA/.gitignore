@@ -1,0 +1,9 @@
+data
+tmp
+build
+__pycache__
+*.egg-info
+dist
+*.swp
+*.log
+.trace_graph

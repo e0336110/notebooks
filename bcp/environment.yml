@@ -1,0 +1,12 @@
+name: bcp_env
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - pytorch=1.3.1
+  - scipy=1.3.1
+  - torchvision=0.4.2
+  - pip:
+    - setproctitle==1.1.10
+prefix: /home/anaconda3/bcp_env
+
