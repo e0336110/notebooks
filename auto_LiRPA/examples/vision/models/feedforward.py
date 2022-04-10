@@ -209,3 +209,11 @@ def cifar_model(in_ch, in_dim):
             m.weight.data.normal_(0, math.sqrt(2. / n))
             m.bias.data.zero_()
     return model
+
+def purchase_model(): 
+    model = nn.Sequential(            
+        nn.Linear(600, 128),
+        nn.ReLU(),
+        nn.Linear(128, 100)
+    )
+    return model

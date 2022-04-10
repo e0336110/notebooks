@@ -86,7 +86,7 @@ def argparser(data='cifar10', model='large',
 
 
     # other arguments
-    parser.add_argument('--prefix')
+    parser.add_argument('--prefix', default=data)
     parser.add_argument('--data', default=data)
     parser.add_argument('--real_time', action='store_true')
     parser.add_argument('--seed', type=int, default=2019)
@@ -195,12 +195,23 @@ def select_model(data, m):
             model = c6f2_()
         else: ### Wong et al. small
             model = cifar_model()
+    elif data=="p100":
+        global one_hot_depth
+        one_hot_depth = 100
+        model = purchase_model()
     elif data=='tinyimagenet':
         model = tinyimagenet()
         
         
     return model
 
+def purchase_model(): 
+    model = nn.Sequential(            
+        nn.Linear(600, 128),
+        nn.ReLU(),
+        nn.Linear(128, 100)
+    )
+    return model    
 
 def mnist_model(): 
     model = nn.Sequential(
@@ -516,9 +527,10 @@ class Flatten(nn.Module): ## =nn.Flatten()
     def forward(self, x):
         return x.view(x.size()[0], -1)
 
-    
+one_hot_depth=None
 def one_hot(batch,depth=10):
-    ones = torch.eye(depth)
+    global one_hot_depth
+    ones = torch.eye(depth if one_hot_depth is None else one_hot_depth)
     return ones.index_select(0,batch)
 
 

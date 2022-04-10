@@ -18,6 +18,7 @@ Models = {
     'mlp_3layer_weight_perturb': mlp_3layer_weight_perturb,
     'mlp_5layer': mlp_5layer,
     'cifar_model': cifar_model,
+    'purchase_model': purchase_model,
     'cnn_4layer': cnn_4layer,
     'cnn_6layer': cnn_6layer,
     'cnn_7layer': cnn_7layer,

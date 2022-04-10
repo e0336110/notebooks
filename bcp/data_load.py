@@ -16,6 +16,19 @@ from torch import autograd
 
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from torch.optim.lr_scheduler import StepLR, MultiStepLR
+import numpy as np 
+from art.utils import to_categorical
+
+class PytorchDataset(Dataset):
+    def __init__(self, x, y):
+        self.x = torch.from_numpy(x)
+        self.y = torch.from_numpy(y).max(1)[1]
+
+    def __len__(self):
+        return len(self.x)
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
 
 
 def data_loaders(data, batch_size, augmentation=False, normalization=False, drop_last=False, shuffle=True): #############
@@ -48,7 +61,30 @@ def data_loaders(data, batch_size, augmentation=False, normalization=False, drop
             trainset = list(datasets.CIFAR10(root='./data/', train=True, download=True, transform=transforms.ToTensor()))[:2500]
             testset = list(datasets.CIFAR10(root='./data/', train=True, download=True, transform=transforms.ToTensor()))[2500:5000]
 
+    if data == "p100":
+        x = []
+        y = []
 
+        with open("../data/dataset_purchase", "r") as f:
+            dataset = f.readlines()
+            for datapoint in dataset: 
+                split = datapoint.rstrip().split(",")
+                label = int(split[0]) - 1
+                x.append([int(s) for s in split[1:]])
+                y.append(label)
+
+        x = np.array(x).astype(np.float32)
+        y = to_categorical(np.array(y), 100)
+
+        target_train_size = 1000
+        target_test_size = 1000
+        x_target_train = x[:target_train_size]
+        y_target_train = y[:target_train_size]
+        x_target_test = x[target_train_size:target_train_size+target_test_size]
+        y_target_test = y[target_train_size:target_train_size+target_test_size]
+
+        trainset = PytorchDataset(x_target_train, y_target_train)
+        testset = PytorchDataset(x_target_test, y_target_test)
         
     if data == 'mnist':
         trainset = datasets.MNIST(root='./data/', train=True, download=True, transform=transforms.ToTensor())
